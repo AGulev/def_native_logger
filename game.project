@@ -3,3 +3,16 @@ title = native_logger
 
 [library]
 include_dirs = native_logger
+
+[native_logger]
+regular_logs = true
+
+[bootstrap]
+main_collection = /example/main.collectionc
+
+[input]
+game_binding = /builtins/input/all.input_bindingc
+
+[android]
+package = com.defold.nlogger
+

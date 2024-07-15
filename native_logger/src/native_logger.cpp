@@ -16,6 +16,14 @@ static int log(lua_State* L) {
     return 0;
 }
 
+static void LogListener(LogSeverity severity, const char *type, const char *message)
+{
+    #if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_ANDROID) || defined(__EMSCRIPTEN__)
+        NativeLogger_LogInternal(severity, message);
+    #endif
+}
+
+
 static const luaL_reg Module_methods[] =
 {
     {"log", log},
@@ -36,5 +44,27 @@ dmExtension::Result InitializeNativeLogger(dmExtension::Params* params)
     return dmExtension::RESULT_OK;
 }
 
+bool regular_logs = false;
 
-DM_DECLARE_EXTENSION(EXTENSION_NAME, LIB_NAME, 0, 0, InitializeNativeLogger, 0, 0, 0)
+static dmExtension::Result AppInitialize(dmExtension::AppParams *params)
+{
+    const char *settings_str = dmConfigFile::GetString(params->m_ConfigFile, "native_logger.regular_logs", "false");
+    regular_logs = settings_str[0] == 't' || settings_str[0] == '1';
+    if (regular_logs)
+    {
+        dmLogRegisterListener(&LogListener);
+    }
+    return dmExtension::RESULT_OK;
+}
+
+static dmExtension::Result AppFinalize(dmExtension::AppParams *params)
+{
+    if (regular_logs)
+    {
+        dmLogUnregisterListener(&LogListener);
+    }
+    return dmExtension::RESULT_OK;
+}
+
+
+DM_DECLARE_EXTENSION(EXTENSION_NAME, LIB_NAME, AppInitialize, AppFinalize, InitializeNativeLogger, 0, 0, 0)
