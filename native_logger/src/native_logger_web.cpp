@@ -1,4 +1,4 @@
-#if defined(__EMSCRIPTEN__)
+#if defined(DM_PLATFORM_HTML5)
 
 #include <emscripten/emscripten.h>
 

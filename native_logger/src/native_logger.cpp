@@ -10,7 +10,7 @@ static int log(lua_State* L) {
     int log_level = luaL_checkinteger(L, 1);
     const char* message = luaL_checkstring(L, 2);
 
-#if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_ANDROID) || defined(__EMSCRIPTEN__)
+    #if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_ANDROID) || defined(DM_PLATFORM_HTML5)
     NativeLogger_LogInternal(log_level, message);
 #endif
     return 0;
@@ -18,7 +18,7 @@ static int log(lua_State* L) {
 
 static void LogListener(LogSeverity severity, const char *type, const char *message)
 {
-    #if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_ANDROID) || defined(__EMSCRIPTEN__)
+    #if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_ANDROID) || defined(DM_PLATFORM_HTML5)
         NativeLogger_LogInternal(severity, message);
     #endif
 }
